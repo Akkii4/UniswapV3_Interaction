@@ -117,7 +117,74 @@ describe("TokenSwap", function () {
     );
   });
 
+  it("Should swap DAI for WETH9 through intermediary pools using swapExactInputMultihop", async function () {
+    const amountIn = ethers.utils.parseUnits("100", "ether");
 
+    // Get the balances of the accounts before the swap
+    const balanceBefore = {
+      dai: await daiContract.balanceOf(daiWhale.address),
+      weth: await wethContract.balanceOf(daiWhale.address),
+    };
+
+    // Execute the swap
+    const tx = await tokenSwap
+      .connect(daiWhale)
+      .swapExactInputMultihop(amountIn);
+
+    // Get the amount of WETH9 received after the swap
+    let receipt = await tx.wait();
+    let outputAmount;
+    const swapEvents = receipt.events?.filter(
+      (x) => x.event == "swapExactInputMultihopEvent"
+    );
+    if (swapEvents !== undefined && swapEvents.length > 0) {
+      // At least one swapExactInputMultihopEvent was emitted
+      outputAmount = swapEvents[0].args["amountOut"].toString();
+    }
+    // Get the balances of the daiWhale after the swap
+    const balanceAfter = {
+      dai: await daiContract.balanceOf(daiWhale.address),
+      weth: await wethContract.balanceOf(daiWhale.address),
+    };
+
+    // Check that the amount of DAI was deducted from the sender
+    expect(balanceAfter.dai).to.equal(balanceBefore.dai.sub(amountIn));
+
+    // Check that the amount of WETH9 was transferred from the contract to the sender
+    expect(balanceAfter.weth).to.equal(balanceBefore.weth.add(outputAmount));
+
+    console.log(
+      `Swapped  ${ethers.utils.formatUnits(
+        amountIn
+      )} DAI for ${ethers.utils.formatUnits(outputAmount)} WETH`
+    );
+  });
+
+  it("Should swap DAI for WETH9 through intermediary pools using swapExactOutputMultihop", async function () {
+    const amountOut = ethers.utils.parseUnits("1", "ether");
+    const amountInMaximum = ethers.utils.parseUnits("10000", "ether");
+
+    // Get the balances of the accounts before the swap
+    const balanceBefore = {
+      dai: await daiContract.balanceOf(daiWhale.address),
+      weth: await wethContract.balanceOf(daiWhale.address),
+    };
+
+    // Execute the swap
+    const tx = await tokenSwap
+      .connect(daiWhale)
+      .swapExactOutputMultihop(amountOut, amountInMaximum);
+
+    // Get the amount of DAI spent to receive the desired amount of WETH9
+    let receipt = await tx.wait();
+    let inputAmount;
+    const swapEvents = receipt.events?.filter(
+      (x) => x.event == "swapExactOutputMultihopEvent"
+    );
+    if (swapEvents !== undefined && swapEvents.length > 0) {
+      // At least one swapExactOutputMultihopEvent was emitted
+      inputAmount = swapEvents[0].args["amountIn"].toString();
+    }
     // Get the balances of the daiWhale after the swap
     const balanceAfter = {
       dai: await daiContract.balanceOf(daiWhale.address),
