@@ -86,7 +86,7 @@ contract TokenSwap {
     /// @dev The calling address must approve this contract to spend its DAI for this function to succeed. As the amount of input DAI is variable,
     /// the calling address will need to approve for a slightly higher amount, anticipating some variance.
     /// @param amountOut The exact amount of WETH9 to receive from the swap.
-    /// @param amountInMaximum The amount of DAI we are willing to spend to receive the specified amount of WETH9.
+    /// @param amountInMaximum The amount of DAI user is willing to spend to receive the specified amount of WETH9.
     /// @return amountIn The amount of DAI actually spent in the swap.
     function swapExactOutputSingle(
         uint256 amountOut,
@@ -120,7 +120,7 @@ contract TokenSwap {
         amountIn = swapRouter.exactOutputSingle(params);
 
         // For exact output swaps, the amountInMaximum may not have all been spent.
-        // If the actual amount spent (amountIn) is less than the specified maximum amount, we must refund the msg.sender and approve the swapRouter to spend 0.
+        // If the actual amount spent (amountIn) is less than the specified maximum amount, contract must refund the msg.sender and approve the swapRouter to spend 0.
         if (amountIn < amountInMaximum) {
             TransferHelper.safeApprove(DAI, address(swapRouter), 0);
             TransferHelper.safeTransfer(
@@ -133,7 +133,7 @@ contract TokenSwap {
     }
 
     /// @notice swapExactInputMultihop swaps a fixed amount of DAI for a maximum possible amount of WETH9 through an intermediary pool.
-    /// For this example, we will swap DAI to USDC, then USDC to WETH9 to achieve our desired output.
+    /// For this example, user will swap DAI to USDC, then USDC to WETH9 to achieve our desired output.
     /// @dev The calling address must approve this contract to spend at least `amountIn` worth of its DAI for this function to succeed.
     /// @param amountIn The amount of DAI to be swapped.
     /// @return amountOut The amount of WETH9 received after the swap.
@@ -175,7 +175,7 @@ contract TokenSwap {
     }
 
     /// @notice swapExactOutputMultihop swaps a minimum possible amount of DAI for a fixed amount of WETH through an intermediary pool.
-    /// For this example, we want to swap DAI for WETH9 through a USDC pool but we specify the desired amountOut of WETH9. Notice how the path encoding is slightly different in for exact output swaps.
+    /// For this example, user want to swap DAI for WETH9 through a USDC pool but user specify the desired amountOut of WETH9. Notice how the path encoding is slightly different in for exact output swaps.
     /// @dev The calling address must approve this contract to spend its DAI for this function to succeed. As the amount of input DAI is variable,
     /// the calling address will need to approve for a slightly higher amount, anticipating some variance.
     /// @param amountOut The desired amount of WETH9.
