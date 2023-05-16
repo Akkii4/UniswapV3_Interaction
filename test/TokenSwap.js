@@ -53,10 +53,6 @@ describe("TokenSwap", function () {
       outputAmount = swapEvents[0].args["amountOut"].toString();
     }
 
-    console.log(
-      `Output WETH amount: ${ethers.utils.formatUnits(outputAmount)}`
-    );
-
     // Get the balances of the daiWhale after the swap
     const balanceAfter = {
       dai: await daiContract.balanceOf(daiWhale.address),
@@ -68,6 +64,12 @@ describe("TokenSwap", function () {
 
     // Check that the amount of WETH9 was transferred from the contract to the sender
     expect(balanceAfter.weth).to.equal(balanceBefore.weth.add(outputAmount));
+
+    console.log(
+      `Swapped  ${ethers.utils.formatUnits(
+        amountIn
+      )} DAI for ${ethers.utils.formatUnits(outputAmount)} WETH`
+    );
   });
 
   it("Should swap DAI for WETH9 using swapExactOutputSingle", async function () {
@@ -96,7 +98,25 @@ describe("TokenSwap", function () {
       inputAmount = swapEvents[0].args["amountIn"].toString();
     }
 
-    console.log(`Input DAI amount: ${ethers.utils.formatUnits(inputAmount)}`);
+    // Get the balances of the daiWhale after the swap
+    const balanceAfter = {
+      dai: await daiContract.balanceOf(daiWhale.address),
+      weth: await wethContract.balanceOf(daiWhale.address),
+    };
+
+    // Check that the amount of DAI was deducted from the sender
+    expect(balanceAfter.dai).to.equal(balanceBefore.dai.sub(inputAmount));
+
+    // Check that the amount of WETH9 was transferred from the contract to the sender
+    expect(balanceAfter.weth).to.equal(balanceBefore.weth.add(amountOut));
+
+    console.log(
+      `Swapped  ${ethers.utils.formatUnits(
+        inputAmount
+      )} DAI for ${ethers.utils.formatUnits(amountOut)} WETH`
+    );
+  });
+
 
     // Get the balances of the daiWhale after the swap
     const balanceAfter = {
@@ -108,6 +128,11 @@ describe("TokenSwap", function () {
     expect(balanceAfter.dai).to.equal(balanceBefore.dai.sub(inputAmount));
 
     // Check that the amount of WETH9 was transferred from the contract to the sender
-    expect(balanceAfter.weth).to.greaterThan(balanceBefore.weth);
+    expect(balanceAfter.weth).to.equal(balanceBefore.weth.add(amountOut));
+    console.log(
+      `Swapped  ${ethers.utils.formatUnits(
+        inputAmount
+      )} DAI for ${ethers.utils.formatUnits(amountOut)} WETH`
+    );
   });
 });
