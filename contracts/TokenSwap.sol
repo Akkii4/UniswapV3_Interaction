@@ -18,6 +18,18 @@ contract TokenSwap {
     // For this example, the pool fee is set to 0.3%.
     uint24 public constant poolFee = 3000;
 
+    /**
+     * @dev Emitted when `swapExactInputSingle` is called and successfully executes a swap, returning the amount of `tokenOut` received.
+     * @param amountOut The amount of `tokenOut` received by the caller.
+     */
+    event swapExactInputSingleEvent(uint256 amountOut);
+
+    /**
+     * @dev Emitted when `swapExactOutputSingle` is called and successfully executes a swap, returning the amount of `tokenIn` spent.
+     * @param amountIn The amount of `tokenIn` spent by the caller.
+     */
+    event swapExactOutputSingleEvent(uint256 amountIn);
+
     /// @notice swapExactInputSingle swaps a fixed amount of DAI for a maximum possible amount of WETH9
     /// using the DAI/WETH9 0.3% pool by calling `exactInputSingle` in the swap router.
     /// @dev The calling address must approve this contract to spend at least `amountIn` worth of its DAI for this function to succeed.
@@ -55,6 +67,7 @@ contract TokenSwap {
 
         // The call to `exactInputSingle` executes the swap.
         amountOut = swapRouter.exactInputSingle(params);
+        emit swapExactInputSingleEvent(amountOut);
     }
 
     /// @notice swapExactOutputSingle swaps a minimum possible amount of DAI for a fixed amount of WETH.
@@ -104,5 +117,6 @@ contract TokenSwap {
                 amountInMaximum - amountIn
             );
         }
+        emit swapExactOutputSingleEvent(amountIn);
     }
 }
