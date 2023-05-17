@@ -9,17 +9,29 @@ import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol";
 import "@uniswap/v3-periphery/contracts/base/LiquidityManagement.sol";
 
+/**
+ * @title LiquidityManager
+ * @dev This contract can receive custody of ERC721 tokens and provides functions to manage liquidity on Uniswap V3.
+ */
 contract LiquidityManager is IERC721Receiver {
+    // Address constants for DAI and USDC
     address public constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address public constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
 
     // For this example, the pool fee is set to 0.01%.
     uint24 public constant poolFee = 100;
 
+    // NonfungiblePositionManager contract instance
     INonfungiblePositionManager public constant NonfungiblePositionManager =
         INonfungiblePositionManager(0xC36442b4a4522E871399CD717aBDD847Ab11FE88);
 
-    /// @notice Represents the deposit of an NFT
+    /**
+     * @dev Represents the deposit of an NFT
+     * @param owner The address of the owner of the NFT
+     * @param liquidity The liquidity of the NFT
+     * @param token0 The address of token0
+     * @param token1 The address of token1
+     */
     struct Deposit {
         address owner;
         uint128 liquidity;
@@ -27,15 +39,22 @@ contract LiquidityManager is IERC721Receiver {
         address token1;
     }
 
-    /// @dev deposits[tokenId] => Deposit
+    // Deposits mapping to store Deposit structs for each NFT
     mapping(uint256 => Deposit) public deposits;
 
-    // Implementing `onERC721Received` so this contract can receive custody of erc721 tokens
+    /**
+     * @dev Receives an ERC721 token and creates a Deposit struct for it
+     * @param operator The address which called `safeTransferFrom` function on the NFT
+     * @param from The address of the previous owner of the NFT
+     * @param tokenId The ID of the ERC721 token
+     * @param data Additional data with no specified format
+     * @return Magic value 0x150b7a02
+     */
     function onERC721Received(
         address operator,
-        address,
+        address from,
         uint256 tokenId,
-        bytes calldata
+        bytes calldata data
     ) external override returns (bytes4) {
         // get position information
 
@@ -44,6 +63,11 @@ contract LiquidityManager is IERC721Receiver {
         return this.onERC721Received.selector;
     }
 
+    /**
+     * @dev Creates a Deposit struct for the given NFT
+     * @param owner The address of the owner of the NFT
+     * @param tokenId The ID of the ERC721 token
+     */
     function _createDeposit(address owner, uint256 tokenId) internal {
         (
             ,
@@ -70,11 +94,14 @@ contract LiquidityManager is IERC721Receiver {
         });
     }
 
-    /// @notice Calls the mint function defined in periphery, mints the same amount of each token. For this example we are providing 1000 DAI and 1000 USDC in liquidity
-    /// @return tokenId The id of the newly minted ERC721
-    /// @return liquidity The amount of liquidity for the position
-    /// @return amount0 The amount of token0
-    /// @return amount1 The amount of token1
+    /**
+     * @dev Calls the mint function defined in periphery, mints the same amount of each token.
+     * For this example we are providing 1000 DAI and 1000 USDC in liquidity
+     * @return tokenId The id of the newly minted ERC721
+     * @return liquidity The amount of liquidity for the position
+     * @return amount0 The amount of token0
+     * @return amount1 The amount of token1
+     */
     function mintNewPosition()
         external
         returns (
