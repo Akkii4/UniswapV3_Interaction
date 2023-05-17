@@ -270,7 +270,7 @@ contract LiquidityManager is IERC721Receiver {
         );
 
         //send liquidity back to owner
-        _sendToOwner(tokenId, amount0, amount1);
+        // _sendToOwner(tokenId, amount0, amount1);
         emit LiquidityDecreasedByHalf(amount0, amount1);
     }
 
