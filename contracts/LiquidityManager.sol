@@ -46,6 +46,14 @@ contract LiquidityManager is IERC721Receiver {
         uint256 amount1
     );
 
+    event FeesCollected(uint256 amount0, uint256 amount1);
+    event LiquidityIncreased(
+        uint256 liquidity,
+        uint256 amount0,
+        uint256 amount1
+    );
+    event LiquidityDecreasedByHalf(uint256 amount0, uint256 amount1);
+
     // Deposits mapping to store Deposit structs for each NFT
     mapping(uint256 => Deposit) public deposits;
 
@@ -210,6 +218,7 @@ contract LiquidityManager is IERC721Receiver {
 
         // send collected feed back to owner
         _sendToOwner(tokenId, amount0, amount1);
+        emit FeesCollected(amount0, amount1);
     }
 
     /// @notice Transfers funds to owner of NFT
@@ -262,6 +271,7 @@ contract LiquidityManager is IERC721Receiver {
 
         //send liquidity back to owner
         _sendToOwner(tokenId, amount0, amount1);
+        emit LiquidityDecreasedByHalf(amount0, amount1);
     }
 
     /// @notice Increases liquidity in the current range
@@ -311,5 +321,7 @@ contract LiquidityManager is IERC721Receiver {
 
         (liquidity, amount0, amount1) = NonfungiblePositionManager
             .increaseLiquidity(params);
+
+        emit LiquidityIncreased(liquidity, amount0, amount1);
     }
 }
