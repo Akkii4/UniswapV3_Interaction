@@ -13,7 +13,8 @@ contract LiquidityManager is IERC721Receiver {
     address public constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address public constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
 
-    uint24 public constant poolFee = 3000;
+    // For this example, the pool fee is set to 0.01%.
+    uint24 public constant poolFee = 100;
 
     INonfungiblePositionManager public immutable nonfungiblePositionManager;
 
@@ -118,8 +119,8 @@ contract LiquidityManager is IERC721Receiver {
                 deadline: block.timestamp
             });
 
-        // Note that the pool defined by DAI/USDC and fee tier 0.3% must already be created and initialized in order to mint
         (tokenId, liquidity, amount0, amount1) = nonfungiblePositionManager
+        // Note that the pool defined by DAI/USDC and fee tier 0.01% must already be created and initialized in order to mint
             .mint(params);
 
         // Create a deposit
