@@ -103,7 +103,7 @@ contract LiquidityManager is IERC721Receiver {
 
     /**
      * @dev Calls the mint function defined in periphery, mints the same amount of each token.
-     * For this example we are providing 1000 DAI and 1000 USDC in liquidity
+     * For this example user is providing 1000 DAI and 1000 USDC in liquidity
      * @return tokenId The id of the newly minted ERC721
      * @return liquidity The amount of liquidity for the position
      * @return amount0 The amount of token0
@@ -118,7 +118,7 @@ contract LiquidityManager is IERC721Receiver {
             uint256 amount1
         )
     {
-        // For this example, we will provide equal amounts of liquidity in both assets.
+        // For this example, user will provide equal amounts of liquidity in both assets.
         // Providing liquidity in both assets means liquidity will be earning fees and is considered in-range.
         uint256 amount0ToMint = 1000e18;
         uint256 amount1ToMint = 1000e6;
