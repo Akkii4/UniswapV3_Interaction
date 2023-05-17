@@ -39,6 +39,13 @@ contract LiquidityManager is IERC721Receiver {
         address token1;
     }
 
+    event PositionMinted(
+        uint256 tokenId,
+        uint128 liquidity,
+        uint256 amount0,
+        uint256 amount1
+    );
+
     // Deposits mapping to store Deposit structs for each NFT
     mapping(uint256 => Deposit) public deposits;
 
@@ -170,5 +177,6 @@ contract LiquidityManager is IERC721Receiver {
             uint256 refund1 = amount1ToMint - amount1;
             TransferHelper.safeTransfer(USDC, msg.sender, refund1);
         }
+        emit PositionMinted(tokenId, liquidity, amount0, amount1);
     }
 }
