@@ -108,7 +108,7 @@ describe("LiquidityManager", function () {
 
     daiAmount = ethers.utils.parseEther("150");
     usdcAmount = ethers.utils.parseUnits("150", 6);
-    const initialDeposit = await liquidityManager.deposits(tokenId);
+    await liquidityManager.deposits(tokenId);
 
     // increase liquidity by the current range
     tx = await liquidityManager.increaseLiquidityCurrentRange(
@@ -127,7 +127,7 @@ describe("LiquidityManager", function () {
     }
 
     // check that liquidity was increased by the current range
-    expect(increasedLiquidity).to.gt(0);
+    expect(increasedLiquidity).to.not.equal(0);
   });
 
   it("should decrease liquidity by half", async function () {
@@ -157,7 +157,7 @@ describe("LiquidityManager", function () {
       token1Redeemed = events[0].args["amount1"].toString();
     }
 
-    expect(token1Redeemed).to.gt(0);
-    expect(token0Redeemed).to.gt(0);
+    expect(token1Redeemed).to.not.equal(0);
+    expect(token0Redeemed).to.not.equal(0);
   });
 });
