@@ -86,8 +86,8 @@ contract LiquidityManager is IERC721Receiver {
     {
         // For this example, we will provide equal amounts of liquidity in both assets.
         // Providing liquidity in both assets means liquidity will be earning fees and is considered in-range.
-        uint256 amount0ToMint = 1000;
-        uint256 amount1ToMint = 1000;
+        uint256 amount0ToMint = 1000e18;
+        uint256 amount1ToMint = 1000e6;
 
         // Approve the position manager
         TransferHelper.safeApprove(
