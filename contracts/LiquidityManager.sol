@@ -16,7 +16,8 @@ contract LiquidityManager is IERC721Receiver {
     // For this example, the pool fee is set to 0.01%.
     uint24 public constant poolFee = 100;
 
-    INonfungiblePositionManager public immutable nonfungiblePositionManager;
+    INonfungiblePositionManager public constant NonfungiblePositionManager =
+        INonfungiblePositionManager(0xC36442b4a4522E871399CD717aBDD847Ab11FE88);
 
     /// @notice Represents the deposit of an NFT
     struct Deposit {
@@ -28,10 +29,6 @@ contract LiquidityManager is IERC721Receiver {
 
     /// @dev deposits[tokenId] => Deposit
     mapping(uint256 => Deposit) public deposits;
-
-    constructor(INonfungiblePositionManager _nonfungiblePositionManager) {
-        nonfungiblePositionManager = _nonfungiblePositionManager;
-    }
 
     // Implementing `onERC721Received` so this contract can receive custody of erc721 tokens
     function onERC721Received(
@@ -61,7 +58,7 @@ contract LiquidityManager is IERC721Receiver {
             ,
             ,
 
-        ) = nonfungiblePositionManager.positions(tokenId);
+        ) = NonfungiblePositionManager.positions(tokenId);
 
         // set the owner and data for position
         // operator is msg.sender
@@ -95,12 +92,12 @@ contract LiquidityManager is IERC721Receiver {
         // Approve the position manager
         TransferHelper.safeApprove(
             DAI,
-            address(nonfungiblePositionManager),
+            address(NonfungiblePositionManager),
             amount0ToMint
         );
         TransferHelper.safeApprove(
             USDC,
-            address(nonfungiblePositionManager),
+            address(NonfungiblePositionManager),
             amount1ToMint
         );
 
@@ -119,8 +116,8 @@ contract LiquidityManager is IERC721Receiver {
                 deadline: block.timestamp
             });
 
-        (tokenId, liquidity, amount0, amount1) = nonfungiblePositionManager
         // Note that the pool defined by DAI/USDC and fee tier 0.01% must already be created and initialized in order to mint
+        (tokenId, liquidity, amount0, amount1) = NonfungiblePositionManager
             .mint(params);
 
         // Create a deposit
@@ -130,7 +127,7 @@ contract LiquidityManager is IERC721Receiver {
         if (amount0 < amount0ToMint) {
             TransferHelper.safeApprove(
                 DAI,
-                address(nonfungiblePositionManager),
+                address(NonfungiblePositionManager),
                 0
             );
             uint256 refund0 = amount0ToMint - amount0;
@@ -140,7 +137,7 @@ contract LiquidityManager is IERC721Receiver {
         if (amount1 < amount1ToMint) {
             TransferHelper.safeApprove(
                 USDC,
-                address(nonfungiblePositionManager),
+                address(NonfungiblePositionManager),
                 0
             );
             uint256 refund1 = amount1ToMint - amount1;
