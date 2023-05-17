@@ -17,6 +17,7 @@
     "hardhat": "^2.14.0"
   },
   "dependencies": {
+    "@uniswap/v3-core": "^1.0.1",
     "@uniswap/v3-periphery": "^1.4.3"
   }
 }
